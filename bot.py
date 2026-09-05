@@ -5,7 +5,6 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 import yt_dlp
 
-# ទិន្នន័យ Bot ថ្មីរបស់អ្នក
 BOT_TOKEN = "8872828720:AAGPmF_pexO7qeP7TKl_4cOxFGwz8OoQvRU"
 BOT_USERNAME = "Happydownload_bot"
 ADMIN_LINK = "https://t.me/heipko80"
@@ -17,15 +16,15 @@ USER_URLS = {}
 
 async def send_welcome_menu(chat_id, context, user_first_name):
     welcome_text = (
-        f"✨ **សួស្តី {user_first_name}!** ✨\n\n"
-        "សូមស្វាគមន៍មកកាន់ **Video & MP3 Downloader Bot** 🎬🎵\n"
+        f"✨🌸 **សួស្តី {user_first_name} 🧸!** 🌸✨\n\n"
+        "សូមស្វាគមន៍មកកាន់ **Video Downloader Bot** 🎬💖\n"
         "───────────────────\n"
-        "📥 **របៀបទាញយក៖**\n"
-        "១. ចម្លង (Copy) Link ពី TikTok, Facebook, YouTube...\n"
-        "២. ផ្ញើ (Paste) Link នោះមកកាន់ទីនេះ\n"
-        "៣. ជ្រើសរើសទាញយកជា MP4 ឬ MP3 🚀"
+        "📥 **របៀបទាញយកវីដេអូ 🎀៖**\n"
+        "១. ចម្លង (Copy) Link ពី TikTok, Facebook, YouTube... 🔗\n"
+        "២. ផ្ញើ (Paste) Link នោះមកកាន់ទីនេះ 💌\n"
+        "៣. ចុចប៊ូតុងដើម្បីទាញយកវីដេអូ MP4 🚀✨"
     )
-    keyboard = [[InlineKeyboardButton("💬 ទំនាក់ទំនង Admin", url=ADMIN_LINK)]]
+    keyboard = [[InlineKeyboardButton("💬 ទំនាក់ទំនង Admin 💌", url=ADMIN_LINK)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await context.bot.send_photo(
@@ -45,22 +44,21 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     
     if not (url.startswith("http://") or url.startswith("https://")):
-        await update.message.reply_text("❌ សូមផ្ញើ Link ឱ្យបានត្រឹមត្រូវ (ឧទាហរណ៍៖ https://...)")
+        await update.message.reply_text("❌ 🥺 សូមផ្ញើ Link ឱ្យបានត្រឹមត្រូវណា (ឧទាហរណ៍៖ https://...)")
         return
 
     USER_URLS[user_id] = url
 
     keyboard = [
         [
-            InlineKeyboardButton("🎬 Video (MP4)", callback_data="dl_video"),
-            InlineKeyboardButton("🎵 Audio (MP3)", callback_data="dl_audio")
+            InlineKeyboardButton("🎬 ទាញយក Video (MP4) 💖", callback_data="dl_video")
         ],
         [
-            InlineKeyboardButton("❌ បោះបង់ / ចាប់ផ្តើមថ្មី", callback_data="cancel_action")
+            InlineKeyboardButton("❌ បោះបង់ / ចាប់ផ្តើមថ្មី 🧸", callback_data="cancel_action")
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("👇 សូមជ្រើសរើសប្រភេទឯកសារដែលអ្នកចង់ទាញយក៖", reply_markup=reply_markup)
+    await update.message.reply_text("👇 ✨ សូមចុចប៊ូតុងខាងក្រោមដើម្បីទាញយកវីដេអូ៖", reply_markup=reply_markup)
 
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -74,81 +72,52 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await send_welcome_menu(query.message.chat_id, context, query.from_user.first_name)
         return
 
-    if query.data in ["like", "dislike"]:
-        msg = "❤️ អរគុណសម្រាប់ការគាំទ្រ!" if query.data == "like" else "អរគុណសម្រាប់មតិ! យើងនឹងអភិវឌ្ឍបន្ថែមទៀត។"
-        await query.answer(msg, show_alert=True)
-        return
-
     url = USER_URLS.get(user_id)
     if not url:
-        await query.edit_message_text("❌ ផុតកំណត់រង់ចាំ! សូមផ្ញើ Link ម្ដងទៀត។")
+        await query.edit_message_text("❌ 🥺 ផុតកំណត់រង់ចាំហើយ! សូមផ្ញើ Link ម្ដងទៀតណា។")
         return
 
-    download_type = query.data
-    await query.edit_message_text("⏳ កំពុងដំណើរការទាញយក សូមរង់ចាំមួយភ្លែត...")
+    await query.edit_message_text("⏳ 🧸 កំពុងដំណើរការទាញយក ៖ សូមរង់ចាំមួយភ្លែតណា... ✨")
 
     if not os.path.exists('downloads'):
         os.makedirs('downloads')
 
-    if download_type == "dl_video":
-        ydl_opts = {
-            'format': 'best',
-            'outtmpl': f'downloads/{user_id}_%(id)s.%(ext)s',
-            'max_filesize': 1500 * 1024 * 1024,
-            'quiet': True,
-        }
-    else: # MP3
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'outtmpl': f'downloads/{user_id}_%(id)s.%(ext)s',
-            'max_filesize': 1500 * 1024 * 1024,
-            'quiet': True,
-        }
+    ydl_opts = {
+        'format': 'best',
+        'outtmpl': f'downloads/{user_id}_%(id)s.%(ext)s',
+        'max_filesize': 1500 * 1024 * 1024,
+        'quiet': True,
+    }
 
     try:
         loop = asyncio.get_event_loop()
         filename = await loop.run_in_executor(None, download_file_sync, ydl_opts, url)
 
-        await query.edit_message_text("📤 កំពុងបញ្ជូនឯកសារទៅ Telegram...")
+        await query.edit_message_text("📤 ✨ កំពុងផ្ញើវីដេអូទៅ Telegram... 🌸")
         
         caption_text = (
-            "✅ **បាន Download ដោយជោគជ័យ!**\n\n"
+            "✅ 💖 **បាន Download ដោយជោគជ័យហើយ!** 🧸✨\n\n"
             f"🤖 ទាញយកតាមរយៈ៖ @{BOT_USERNAME}"
         )
 
         keyboard = [
             [
-                InlineKeyboardButton("👍 ចូលចិត្ត", callback_data="like"),
-                InlineKeyboardButton("👎 មិនចូលចិត្ត", callback_data="dislike")
+                InlineKeyboardButton("💬 ទំនាក់ទំនង Admin 💌", url=ADMIN_LINK)
             ],
             [
-                InlineKeyboardButton("🔄 ទាញយកវីដេអូផ្សេងទៀត", callback_data="cancel_action")
+                InlineKeyboardButton("🔄 ទាញយកវីដេអូផ្សេងទៀត 🚀", callback_data="cancel_action")
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         with open(filename, 'rb') as file:
-            if download_type == "dl_video":
-                await context.bot.send_video(
-                    chat_id=query.message.chat_id,
-                    video=file,
-                    caption=caption_text,
-                    reply_markup=reply_markup,
-                    parse_mode='Markdown'
-                )
-            else:
-                await context.bot.send_audio(
-                    chat_id=query.message.chat_id,
-                    audio=file,
-                    caption=caption_text,
-                    reply_markup=reply_markup,
-                    parse_mode='Markdown'
-                )
+            await context.bot.send_video(
+                chat_id=query.message.chat_id,
+                video=file,
+                caption=caption_text,
+                reply_markup=reply_markup,
+                parse_mode='Markdown'
+            )
 
         if os.path.exists(filename):
             os.remove(filename)
@@ -157,8 +126,8 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logging.error(f"Error downloading: {e}")
         await query.edit_message_text(
-            "❌ មិនអាចទាញយកបានទេ!\n"
-            "💡 ប្រសិនបើទាញយក MP3 មិនបាន សូមប្រាកដថាម៉ាស៊ីនរបស់អ្នកបានដំឡើង FFmpeg រួចរាល់។"
+            "❌ 🥺 សុំទោសផង មិនអាចទាញយកបានទេ!\n"
+            "💡 សូមពិនិត្យមើល Link ឡើងវិញ ឬសាកល្បងម្ដងទៀតណា។"
         )
 
 def download_file_sync(ydl_opts, url):
