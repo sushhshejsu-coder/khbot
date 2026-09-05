@@ -1,4 +1,4 @@
-import os
+hereimport os
 import logging
 import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -16,12 +16,12 @@ USER_URLS = {}
 
 async def send_welcome_menu(chat_id, context, user_first_name):
     welcome_text = (
-        f"✨🌸 **សួស្តី {user_first_name} 🧸!** 🌸✨\n\n"
-        "សូមស្វាគមន៍មកកាន់ **Video Downloader Bot** 🎬💖\n"
+        f"✨🌸 សួស្តី {user_first_name} 🧸! 🌸✨\n\n"
+        "សូមស្វាគមន៍មកកាន់ Video Downloader Bot 🎬💖\n"
         "───────────────────\n"
-        "📥 **របៀបទាញយកវីដេអូ 🎀៖**\n"
+        "📥 របៀបទាញយកវីដេអូ 🎀៖\n"
         "១. ចម្លង (Copy) Link ពី TikTok, Facebook, YouTube... 🔗\n"
-        "២. ផ្ញើ (Paste) Link នោះមកកាន់ទីនេះ 💌\n"
+        "២. ផ្ញើ (Paste) Link នោះមកកាន់ទីនេះ ❤️💌\n"
         "៣. ចុចប៊ូតុងដើម្បីទាញយកវីដេអូ MP4 🚀✨"
     )
     keyboard = [[InlineKeyboardButton("💬 ទំនាក់ទំនង Admin 💌", url=ADMIN_LINK)]]
@@ -31,8 +31,7 @@ async def send_welcome_menu(chat_id, context, user_first_name):
         chat_id=chat_id,
         photo=START_IMAGE_URL, 
         caption=welcome_text, 
-        reply_markup=reply_markup, 
-        parse_mode='Markdown'
+        reply_markup=reply_markup
     )
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -96,7 +95,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text("📤 ✨ កំពុងផ្ញើវីដេអូទៅ Telegram... 🌸")
         
         caption_text = (
-            "✅ 💖 **បាន Download ដោយជោគជ័យហើយ!** 🧸✨\n\n"
+            "✅ 💖 បាន Download ដោយជោគជ័យហើយ! 🧸✨\n\n"
             f"🤖 ទាញយកតាមរយៈ៖ @{BOT_USERNAME}"
         )
 
@@ -115,8 +114,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 chat_id=query.message.chat_id,
                 video=file,
                 caption=caption_text,
-                reply_markup=reply_markup,
-                parse_mode='Markdown'
+                reply_markup=reply_markup
             )
 
         if os.path.exists(filename):
